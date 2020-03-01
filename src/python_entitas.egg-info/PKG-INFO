@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: python-entitas
+Version: 0.0.11
+Summary: A small example package
+Home-page: https://github.com/UpUpLiu/python_entitas
+Author: hangangliu
+Author-email: hangangliurd@gmail.com
+License: MIT Licence
+Description: # python_entitas
+        
+Keywords: entitas
+Platform: any
+Classifier: Programming Language :: Python :: 3

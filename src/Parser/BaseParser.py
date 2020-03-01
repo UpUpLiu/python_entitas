@@ -1,8 +1,8 @@
+import json
 import os
 from mako.template import Template
 from pathlib import Path
 from . import utils
-from . import parser_mako
 import collections
 from lupa import *
 
@@ -258,7 +258,7 @@ class BaseParser:
         self.component_path = ''
         self.contexts = collections.OrderedDict()
         self.service_path = Path("")
-        self.mako_path = Path(utils.get_python_fiel_Path(__file__)) / '../../mako'
+        self.mako_path = Path(utils.get_python_fiel_Path(__file__)) / '../mako'
         self.python_entitas_soure_path = Path(utils.get_python_fiel_Path(__file__)) / '../entitas'
 
         self.base_config_file = config_file_path
@@ -300,17 +300,13 @@ class BaseParser:
     def render_mako(self, fime_name, mako_name, context):
         file_path = os.path.join(self.out_path, context.name + fime_name)
         file = utils.open_file(file_path + '.py', 'w')
-        template = self.get_render_mako_template(mako_name)
+        template = Template(filename=str(self.mako_path / mako_name),
+                            module_directory=os.path.join(self.script_path, 'makoCache'))
         content = self.template_render(template, context)
         content = content.replace('\n', '')
         content = content.replace('\r\n', '')
         file.write(content)
         file.close()
-
-    def get_render_mako_template(self, mako_name):
-        template = Template(text= eval('parser_mako.' + mako_name, globals(), locals()),
-                            module_directory=os.path.join(self.script_path, 'makoCache'))
-        return template
 
     def template_render(self, template, context):
         return template.render(
@@ -320,7 +316,7 @@ class BaseParser:
 
     def generate_context(self):
         for key, context in self.contexts.items():
-            self.render_mako("Context" , 'ecs_context', context)
+            self.render_mako("Context" , 'ecs_context.mako', context)
             file_name = os.path.join(self.out_path / "../Extension/Context", context.name + "Context.py" )
             if not os.path.exists(file_name):
                 file = utils.open_file(file_name, 'w')
@@ -333,7 +329,7 @@ class {0}Context(Context):
 
     def generate_entity(self):
         for key, context in self.contexts.items():
-            self.render_mako("Entity" , 'ecs_entity', context)
+            self.render_mako("Entity" , 'ecs_entity.mako', context)
             file_name = os.path.join(self.out_path / "../Extension/Entity", context.name + "Entity.py" )
             if not os.path.exists(file_name):
                 file = utils.open_file(file_name, 'w')
@@ -346,14 +342,15 @@ class {0}Entity(Entity):
 
     def generate_component(self):
         for key, context in self.contexts.items():
-            self.render_mako("Components" , 'ecs_make_component', context)
+            self.render_mako("Components" , 'ecs_make_component.mako', context)
 
     def generate_matcher(self):
         for key, context in self.contexts.items():
             self.render_mako("Matchers" , 'ecs_matcher.mako', context)
 
     def generate_autoinc(self):
-        template = self.get_render_mako_template('ecs_autoinc')
+        template = Template(filename=str(self.mako_path / "ecs_autoinc.mako"),
+                            module_directory=os.path.join(self.script_path, 'makoCache'))
         file_name = os.path.join(self.out_path, "Contexts.py" )
         file = utils.open_file(file_name, 'w')
         content = template.render(
@@ -378,11 +375,7 @@ class {0}Entity(Entity):
             entity_inc_list.append(context.name + 'Entity')
         file.write('''
 from .Extension.Entity import {0}'''.format(','.join(entity_inc_list)))
-        entity_inc_list = []
-        for key, context in self.contexts.items():
-            entity_inc_list.append(context.name + 'Context')
-        file.write('''
-from .Extension.Context import {0}'''.format(','.join(entity_inc_list)))
+
     def generate(self):
         self.generate_context()
         self.generate_component()

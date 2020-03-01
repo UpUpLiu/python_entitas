@@ -30,14 +30,10 @@ ecs_context = '''
         for item in a:
             b.append(item[0])
         return sep.join(b)
-%>\\
-
+%>
 from .Source import Context, Entity, PrimaryEntityIndex, EntityIndex, Matcher
 from ..Extension.Entity.${Context_name}Entity import ${Context_name}Entity
 from .${Context_name}Components import ${Context_name}Components as Attr_comps
-
-
-
 class ${Context_name}Context(Context):
     def __init__(self):
 %for comp in components:
@@ -46,7 +42,7 @@ class ${Context_name}Context(Context):
     name =  comp.name
     Context_name = context_name[0].upper() + context_name[1:]
     properties = comp.data
-%>\\
+%>
     %if comp.single:
         %if not comp.simple and comp.single:
         self.${name} = None
@@ -63,7 +59,7 @@ class ${Context_name}Context(Context):
         name =  comp.name
         Context_name = context_name[0].upper() + context_name[1:]
         properties = comp.data
-    %>\\
+    %>
         %if comp.single:
             %if not comp.simple:
     def set${Name}(self,${params(properties)}):
@@ -113,7 +109,7 @@ class ${Context_name}Context(Context):
         name =  comp.name
         Context_name = context_name[0].upper() + context_name[1:]
         properties = comp.data
-    %>\\
+    %>
             %for attr in  comp.attr:
                 %if attr.class_name == "primaryindex":
         local group = self:get_group(Matcher({${Context_name}_comps.${Name}}))
@@ -142,7 +138,7 @@ class ${Context_name}Context(Context):
             value = index_data.v
             call_parm.append('{' + 'comp_type={0},  key =  "{1}"'.format(Context_name + "_comps." + Name, value) + '}')
         print(','.join(matcher_parm))
-    %>\\
+    %>
         local group = self.get_group(Matcher({${','.join(matcher_parm)}}))
         self._ContextIndex${i} = classMap.EntityMuIndex:new(group, {
             ${','.join(call_parm)}
@@ -157,7 +153,7 @@ class ${Context_name}Context(Context):
         name =  comp.name
         Context_name = context_name[0].upper() + context_name[1:]
         properties = comp.data
-    %>\\
+    %>
             %for attr in  comp.attr:
                 %if attr.class_name == "primaryindex":
     def GetEntityBy${Name}${attr.p_name}(self,${attr.p_name}):
@@ -185,7 +181,7 @@ class ${Context_name}Context(Context):
             name_parm.append(Name)
             name_parm.append(index_data.v)
             call_parm.append(Name+'_'+value)
-    %>\\
+    %>
 
     def ${index.funcName}(self,${','.join(call_parm)}):
         return self._ContextIndex${i}.get_entities(${','.join(call_parm)})
@@ -210,7 +206,7 @@ ecs_entity = '''
         for item in a:
             b.append('"' + item[0] + '"')
         return sep.join(b)
-%>\
+%>
 
 from .Source import Context, Entity, PrimaryEntityIndex, EntityIndex, Matcher
 from .${Context_name}Components import ${Context_name}Components as ${Context_name}_comps
@@ -225,7 +221,7 @@ class ${Context_name}Entity(Entity):
     name =  comp.name
     Context_name = context_name[0].upper() + context_name[1:]
     properties = comp.data
-%>\
+%>
         self.${name} = None
 % endfor
         return
@@ -303,7 +299,7 @@ ecs_make_component = '''
             b.append('' + item[0] + '')
         return sep.join(b)
     components = contexts.components
-%>\\
+%>
 class ${Context_name}Components:
 %for comp in components:
 <%
@@ -311,7 +307,7 @@ class ${Context_name}Components:
     name =  comp.name
     Context_name = context_name[0].upper() + context_name[1:]
     properties = comp.data
-%>\\
+%>
     %if not comp.simple:
 
     class ${Name}:
@@ -337,7 +333,7 @@ ecs_service = '''
 <%
     Context_name = context_name[0].upper() + context_name[1:]
     components = contexts.components
-%>\\
+%>
 
 ---@class ${Context_name}Service
 local M = {}
@@ -353,7 +349,7 @@ ecs_service_inc = '''
 <%
     Context_name = context_name[0].upper() + context_name[1:]
     components = contexts.components
-%>\\
+%>
 ---@type ${contexts.simple_name}Service
 Service.${contexts.simple_name} = import(".${contexts.simple_name}Service")
 Service.${contexts.simple_name}.init()
