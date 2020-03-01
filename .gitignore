@@ -1,3 +1,5 @@
 makoCache
 PythonEntitas
 */__pycache__
+python_entitas/Parser/__pycache__/
+.idea
