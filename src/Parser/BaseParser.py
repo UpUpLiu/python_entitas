@@ -116,12 +116,12 @@ class BaseParser:
 
     def generate_context(self):
         for key, context in self.contexts.items():
-            self.render_mako("Context" , 'ecs_context.mako', context)
+            self.render_mako("GenerateContext" , 'ecs_context.mako', context)
             file_name = os.path.join(self.out_path / "../Extension/Context", context.name + "Context.py" )
             if not os.path.exists(file_name):
                 file = utils.open_file(file_name, 'w')
                 file.write('''
-from ...Generated.{0}Context import {0}Context as Context
+from ... import {0}GenerateContext as Context
 class {0}Context(Context):
     def __init__(self):
         super().__init__()'''.format(context.name))
@@ -129,12 +129,12 @@ class {0}Context(Context):
 
     def generate_entity(self):
         for key, context in self.contexts.items():
-            self.render_mako("Entity" , 'ecs_entity.mako', context)
+            self.render_mako("GenerateEntity" , 'ecs_entity.mako', context)
             file_name = os.path.join(self.out_path / "../Extension/Entity", context.name + "Entity.py" )
             if not os.path.exists(file_name):
                 file = utils.open_file(file_name, 'w')
                 file.write('''
-from ...Generated.{0}Entity import {0}Entity as Entity
+from ... import {0}GenerateEntity as Entity
 class {0}Entity(Entity):
     def __init__(self):
         super().__init__()'''.format(context.name))
@@ -157,8 +157,8 @@ class {0}Entity(Entity):
             contexts=self.contexts,
             source_path=self.source
         )
-        content = content.replace('\n', '')
-        content = content.replace('\r\n', '')
+        # content = content.replace('\n', '')
+        # content = content.replace('\r\n', '')
         file.write(content)
         file.close()
 
@@ -172,9 +172,15 @@ class {0}Entity(Entity):
         file.write('from .Generated import *')
         entity_inc_list = []
         for key, context in self.contexts.items():
-            entity_inc_list.append(context.name + 'Entity')
-        file.write('''
-from .Extension.Entity import {0}'''.format(','.join(entity_inc_list)))
+            entity_inc_list.append(context.name)
+            file.write('''
+from .Generated.{0}GenerateEntity import {0}GenerateEntity'''.format(context.name))
+            file.write('''
+from .Generated.{0}GenerateContext import {0}GenerateContext'''.format(context.name))
+            file.write('''
+from .Extension.Entity.{0}Entity import {0}Entity'''.format(context.name))
+            file.write('''
+from .Extension.Context.{0}Context import {0}Context'''.format(context.name))
 
     def generate(self):
         self.generate_context()

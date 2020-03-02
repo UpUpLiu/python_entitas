@@ -18,9 +18,7 @@ from .Source import Context, Entity, PrimaryEntityIndex, EntityIndex, Matcher
 from ..Extension.Entity.${Context_name}Entity import ${Context_name}Entity
 from .${Context_name}Components import ${Context_name}Components as Attr_comps
 
-
-
-class ${Context_name}Context(Context):
+class ${Context_name}GenerateContext(Context):
     def __init__(self):
 %for comp in components:
 <%
@@ -37,7 +35,11 @@ class ${Context_name}Context(Context):
     %endif
 %endfor
         super().__init__()
+        self.initGenerateEntityIndexes()
         return
+
+    def _create_entity(self):
+        return  ${Context_name}Entity()
 
     %for comp in components:
     <%
@@ -85,12 +87,9 @@ class ${Context_name}Context(Context):
         %endif
     %endfor
 
-    def _create_entity(self):
-        return ${context_name}Entity()
-
     def initGenerateEntityIndexes(self):
     %for comp in components:
-    <%
+<%
         Name = comp.Name
         name =  comp.name
         Context_name = context_name[0].upper() + context_name[1:]
@@ -98,78 +97,36 @@ class ${Context_name}Context(Context):
     %>\
             %for attr in  comp.attr:
                 %if attr.class_name == "primaryindex":
-        local group = self:get_group(Matcher({${Context_name}_comps.${Name}}))
-        self._${Name}${attr.p_name}PrimaryIndex = PrimaryEntityIndex:new(${Context_name}_comps.${Name}, group, '${attr.p_name}')
+\
+        group = self.get_group(Matcher(all_of =[${Context_name}_comps.${Name}]))
+        self._${Name}${attr.p_name}PrimaryIndex = PrimaryEntityIndex(${Context_name}_comps.${Name}, group, '${attr.p_name}')
         self.add_entity_index(self._${Name}${attr.p_name}PrimaryIndex)
                 %elif attr.class_name == "index":
-        local group = self:get_group(Matcher({${Context_name}_comps.${Name}}))
-        self._${Name}${attr.p_name}Index = EntityIndex:new(${Context_name}_comps.${Name}, group, '${attr.p_name}')
+        group = self.get_group(Matcher(all_of =[${Context_name}_comps.${Name}]))
+        self._${Name}${attr.p_name}Index = EntityIndex(${Context_name}_comps.${Name}, group, '${attr.p_name}')
         self.add_entity_index(self._${Name}${attr.p_name}Index)
                 %endif
             %endfor
     %endfor
-
-    <%
-        i = 0
-    %>
-    %for index in contexts.muIndex:
-    <%
-        matcher_parm = []
-        call_parm = []
-        i += 1
-        for index_data in index.index_data:
-            Name = index_data.k
-            Name = Name[0].upper() + Name[1:]
-            matcher_parm.append(Context_name + "_comps." + Name)
-            value = index_data.v
-            call_parm.append('{' + 'comp_type={0},  key =  "{1}"'.format(Context_name + "_comps." + Name, value) + '}')
-        print(','.join(matcher_parm))
-    %>\
-        local group = self.get_group(Matcher({${','.join(matcher_parm)}}))
-        self._ContextIndex${i} = classMap.EntityMuIndex:new(group, {
-            ${','.join(call_parm)}
-        })
-    %endfor
         return
-
-
     %for comp in components:
     <%
         Name = comp.Name
         name =  comp.name
         Context_name = context_name[0].upper() + context_name[1:]
         properties = comp.data
-    %>\
+    %>
             %for attr in  comp.attr:
                 %if attr.class_name == "primaryindex":
+
     def GetEntityBy${Name}${attr.p_name}(self,${attr.p_name}):
-        return self._${Name}${attr.p_name}PrimaryIndex.get_entity(self,${attr.p_name})
+        return self._${Name}${attr.p_name}PrimaryIndex.get_entity(${attr.p_name})
+
                 %elif attr.class_name == "index":
+
     def GetEntitiesBy${Name}${attr.p_name}(self,${attr.p_name}):
         return self._${Name}${attr.p_name}Index.get_entities(${attr.p_name})
 
                 %endif
             %endfor
-    %endfor
-
-
-    <%
-        i = 0
-    %>
-    %for index in contexts.muIndex:
-    <%
-        call_parm = []
-        i += 1
-        name_parm = []
-        for index_data in index.index_data:
-            Name = index_data.k
-            Name = Name[0].upper() + Name[1:]
-            name_parm.append(Name)
-            name_parm.append(index_data.v)
-            call_parm.append(Name+'_'+value)
-    %>\
-
-    def ${index.funcName}(self,${','.join(call_parm)}):
-        return self._ContextIndex${i}.get_entities(${','.join(call_parm)})
-
     %endfor

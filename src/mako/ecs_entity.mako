@@ -20,7 +20,7 @@ from .Source import Context, Entity, PrimaryEntityIndex, EntityIndex, Matcher
 from .${Context_name}Components import ${Context_name}Components as ${Context_name}_comps
 
 
-class ${Context_name}Entity(Entity):
+class ${Context_name}GenerateEntity(Entity):
     def __init__(self):
         super().__init__()
 % for comp in components:

@@ -4,6 +4,18 @@
 --- DateTime: 2020/1/13 20:30
 ---
 return {
+    test = {
+        data = {
+            'value : int @ index',
+        },
+        tag = {tag.Attr}
+    },
+    test2 = {
+        data = {
+            'value : int @ primaryIndex',
+        },
+        tag = {tag.Attr}
+    },
     event = {
         data = {
             'value : object'

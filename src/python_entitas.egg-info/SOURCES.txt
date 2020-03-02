@@ -1,12 +1,13 @@
 README.md
 setup.py
+src/Parser/AttrClass.py
 src/Parser/BaseParser.py
+src/Parser/Component.py
 src/Parser/PythonParser.py
 src/Parser/__init__.py
-src/Parser/parser_mako.py
 src/Parser/utils.py
+src/entitas/MakeComponents.py
 src/entitas/__init__.py
-src/entitas/__version__.py
 src/entitas/collector.py
 src/entitas/context.py
 src/entitas/entity.py
