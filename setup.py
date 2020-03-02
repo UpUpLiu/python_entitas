@@ -15,7 +15,7 @@ if __name__ == "__main__":
         url="https://github.com/UpUpLiu/python_entitas",
         packages=find_packages('src'),
         package_dir={'': 'src'},
-        data_files=[('Parser/mako',
+        data_files=[('mako',
                      ['src/mako/ecs_autoinc.mako', 'src/mako/ecs_context.mako',
                       'src/mako/ecs_entity.mako', 'src/mako/ecs_make_component.mako',
                       'src/mako/ecs_service.mako', 'src/mako/ecs_service_inc.mako'])],

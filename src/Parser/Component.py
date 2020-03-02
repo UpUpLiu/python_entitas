@@ -1,4 +1,4 @@
-from src.Parser.AttrClass import PrimaryIndex, Index, Event
+from .AttrClass import PrimaryIndex, Index, Event
 
 
 class Component():
