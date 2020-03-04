@@ -101,7 +101,7 @@ class BaseParser:
         file_path = os.path.join(self.out_path, context.name + fime_name)
         file = utils.open_file(file_path + '.py', 'w')
         template = Template(filename=str(self.mako_path / mako_name),
-                            module_directory=os.path.join(self.script_path, 'makoCache'))
+                            module_directory=os.path.join(self.mako_path, 'makoCache'))
         content = self.template_render(template, context)
         content = content.replace('\n', '')
         content = content.replace('\r\n', '')

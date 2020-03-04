@@ -16,7 +16,7 @@
 
 from .Source import Context, Entity, PrimaryEntityIndex, EntityIndex, Matcher
 from ..Extension.Entity.${Context_name}Entity import ${Context_name}Entity
-from .${Context_name}Components import ${Context_name}Components as Attr_comps
+from .${Context_name}Components import ${Context_name}Components as ${Context_name}_comps
 
 class ${Context_name}GenerateContext(Context):
     def __init__(self):
