@@ -1,4 +1,10 @@
 return {
+    testid = {
+      data = {
+          'value : int @ index'
+      },
+      tag = {tag.Context}
+    },
     components = {
         data = {
             'value : []'

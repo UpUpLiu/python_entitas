@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from .BaseParser import BaseParser, Component
+from src.Parser.Component import Component
+from .BaseParser import BaseParser
 from . import utils
 
 
