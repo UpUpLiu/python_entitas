@@ -25,8 +25,9 @@ local entitas = {
 	namespace ="Entitas",
 	component_path = '.',
 	source ="Common.entitas",
-	output ="../PythonEntitas/Generated",
+	output ="../PythonEntitas",
 	service_path = "../PythonEntitas",
+	extension_path = "../Extension",
 	context_index = "ContextIndex",
 	tag = tag
 }

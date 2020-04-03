@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
 if __name__ == "__main__":
-    with open("README.md", "r") as fh:
+    with open("README.md", "r", encoding='UTF-8') as fh:
         long_description = fh.read()
     setup(
         name="python_entitas",
-        version="0.0.11",
+        version="0.0.13",
         author="hangangliu",
         keywords=("entitas"),
         license="MIT Licence",

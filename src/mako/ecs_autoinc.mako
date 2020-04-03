@@ -9,4 +9,5 @@ class Contexts:
             name = con.Name[0].lower() + con.Name[1:]
         %>
     ${name} = ${con.Name}Context()
+    ${name}.set_entity_class()
     %endfor

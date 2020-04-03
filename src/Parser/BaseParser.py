@@ -53,6 +53,7 @@ class BaseParser:
         self.source = ""
         self.namespace = ""
         self.out_path = ""
+        self.extension_path = ""
         self.parser_tag = None
         self.tag = None
         self.component_path = ''
@@ -76,7 +77,9 @@ class BaseParser:
         self.source = config.source
         self.component_path = self.base_config_path / config.component_path
 
-        self.out_path = self.base_config_path / config.output
+        self.out_path_root = self.base_config_path  /config.output
+        self.out_path = self.base_config_path  /config.output / "Generated"
+        self.extension_path = self.base_config_path / config.extension_path
         self.namespace = config.namespace
         self.tag = list(config.tag.values())
         self.service_path = self.base_config_path / config.service_path
@@ -87,6 +90,17 @@ class BaseParser:
             context.setSource(self.source)
             context.setOutPut(self.out_path)
             self.contexts[tag] = context
+
+        relative_paths = os.path.relpath( self.extension_path, self.out_path_root)
+        self.root_2_extension = relative_paths.replace('/', '').replace('\\', '')
+        if not self.root_2_extension.startswith('.'):
+            self.root_2_extension = '.' + self.root_2_extension
+
+        relative_paths = os.path.relpath( self.out_path_root, self.extension_path)
+        self.extension_to_generate = relative_paths.replace('/','').replace('\\','')
+        if not self.extension_to_generate.startswith('.'):
+            self.extension_to_generate = '.' + self.extension_to_generate
+
 
     def load_context_config(self):
         return
@@ -117,27 +131,27 @@ class BaseParser:
     def generate_context(self):
         for key, context in self.contexts.items():
             self.render_mako("GenerateContext" , 'ecs_context.mako', context)
-            file_name = os.path.join(self.out_path / "../Extension/Context", context.name + "Context.py" )
+            file_name = os.path.join(self.extension_path / "Context", context.name + "Context.py" )
             if not os.path.exists(file_name):
                 file = utils.open_file(file_name, 'w')
                 file.write('''
-from ... import {0}GenerateContext as Context
+from .{1} import {0}GenerateContext as Context
 class {0}Context(Context):
     def __init__(self):
-        super().__init__()'''.format(context.name))
+        super().__init__()'''.format(context.name, self.extension_to_generate))
                 file.close()
 
     def generate_entity(self):
         for key, context in self.contexts.items():
             self.render_mako("GenerateEntity" , 'ecs_entity.mako', context)
-            file_name = os.path.join(self.out_path / "../Extension/Entity", context.name + "Entity.py" )
+            file_name = os.path.join(self.extension_path / "Entity", context.name + "Entity.py" )
             if not os.path.exists(file_name):
                 file = utils.open_file(file_name, 'w')
                 file.write('''
-from ... import {0}GenerateEntity as Entity
+from .{1} import {0}GenerateEntity as Entity
 class {0}Entity(Entity):
     def __init__(self):
-        super().__init__()'''.format(context.name))
+        super().__init__()'''.format(context.name, self.extension_to_generate))
                 file.close()
 
     def generate_component(self):
@@ -155,7 +169,9 @@ class {0}Entity(Entity):
         file = utils.open_file(file_name, 'w')
         content = template.render(
             contexts=self.contexts,
-            source_path=self.source
+            source_path=self.source,
+            root_2_extension = self.root_2_extension,
+            extension_2_generate = self.extension_to_generate
         )
         # content = content.replace('\n', '')
         # content = content.replace('\r\n', '')
@@ -178,9 +194,9 @@ from .Generated.{0}GenerateEntity import {0}GenerateEntity'''.format(context.nam
             file.write('''
 from .Generated.{0}GenerateContext import {0}GenerateContext'''.format(context.name))
             file.write('''
-from .Extension.Entity.{0}Entity import {0}Entity'''.format(context.name))
+from {1}.Entity.{0}Entity import {0}Entity'''.format(context.name, self.root_2_extension))
             file.write('''
-from .Extension.Context.{0}Context import {0}Context'''.format(context.name))
+from {1}.Context.{0}Context import {0}Context'''.format(context.name, self.root_2_extension))
 
     def generate(self):
         self.generate_context()

@@ -1,5 +1,5 @@
-from PythonEntitas.Extension.Context.AttrContext import AttrContext
-from PythonEntitas.Extension.Entity.AttrEntity import AttrEntity
+# from PythonEntitas.Extension.Context.AttrContext import AttrContext
+# from PythonEntitas.Extension.Entity.AttrEntity import AttrEntity
 from src.Parser import PythonParser, utils
 
 if __name__ == "__main__":
