@@ -25,6 +25,8 @@ class Context(object):
 
         self._entity_indices = {}
 
+        self.entity_class = Entity
+
     @property
     def entities(self):
         return self._entities
@@ -35,10 +37,6 @@ class Context(object):
         :rtype: bool
         """
         return entity in self._entities
-
-
-    def _create_entity(self):
-        return Entity()
 
     def create_entity(self):
         """Creates an entity. Pop one entity from the pool if it is not
@@ -105,6 +103,12 @@ class Context(object):
         self._groups[matcher] = group
 
         return group
+
+    def set_entity_class(self, entity_class):
+        self.entity_class = entity_class
+
+    def _create_entity(self):
+        return self.entity_class()
 
     def set_unique_component(self, comp_type, *args):
         entity = self.create_entity()

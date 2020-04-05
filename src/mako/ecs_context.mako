@@ -15,7 +15,6 @@
 %>\
 
 from .Source import Context, Entity, PrimaryEntityIndex, EntityIndex, Matcher
-from ..Extension.Entity.${Context_name}Entity import ${Context_name}Entity
 from .${Context_name}Components import ${Context_name}Components as ${Context_name}_comps
 
 class ${Context_name}GenerateContext(Context):
@@ -37,9 +36,6 @@ class ${Context_name}GenerateContext(Context):
         super().__init__()
         self.initGenerateEntityIndexes()
         return
-
-    def _create_entity(self):
-        return  ${Context_name}Entity()
 
     %for comp in components:
     <%
